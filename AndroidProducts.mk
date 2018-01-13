@@ -15,4 +15,5 @@
 #
 
 PRODUCT_MAKEFILES := \
+     $(LOCAL_DIR)/pa_T00F.mk \
      $(LOCAL_DIR)/device.mk
