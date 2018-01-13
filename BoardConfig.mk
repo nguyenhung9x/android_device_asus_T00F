@@ -41,7 +41,6 @@ BOARD_CUSTOM_MKBOOTIMG := pack_intel
 BOARD_CUSTOM_BOOTIMG_MK := device/asus/T00F/mkbootimg.mk
 DEVICE_BASE_BOOT_IMAGE := device/asus/T00F/base_images/boot.img
 DEVICE_BASE_RECOVERY_IMAGE := device/asus/T00F/base_images/recovery.img
-NEED_KERNEL_MODULE_ROOT := true
 
 # Inline kernel building
 TARGET_KERNEL_SOURCE := kernel/asus/T00F
