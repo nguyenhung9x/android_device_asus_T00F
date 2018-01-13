@@ -310,3 +310,14 @@ $(call inherit-product-if-exists, hardware/broadcom/wlan/bcmdhd/firmware/bcm4339
 # hardware optimizations
 #PRODUCT_PROPERTY_OVERRIDES += \
 #    dalvik.vm.isa.x86.features=sse4_2,aes_in,popcnt,movbe
+
+ifneq ($(TARGET_KERNEL_BUILT_FROM_SOURCE), true)
+# Use prebuilt kernel
+ifeq ($(TARGET_PREBUILT_KERNEL),)
+LOCAL_KERNEL := device/asus/T00F/bzImage
+else
+LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
+endif
+PRODUCT_COPY_FILES += \
+    $(LOCAL_KERNEL):kernel
+endif #TARGET_KERNEL_BUILT_FROM_SOURCE
