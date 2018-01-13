@@ -7,5 +7,4 @@ allow akmd sensors_device:chr_file rw_file_perms;
 allow akmd system_data_file:dir { read write setattr open add_name };
 #============= akmd ==============
 allow akmd factory_file:dir search;
-allow akmd rootfs:lnk_file r_file_perms;
 

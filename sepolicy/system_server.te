@@ -13,7 +13,6 @@ allow system_server radio_device:chr_file w_file_perms;
 
 # This is evil but we cannot constrain it anymore than
 # "any system_file" because the domain rules in external/sepolicy.
-allow system_server system_file:file execmod;
 
 #unix_socket_connect(system_server, sensorhubd, sensorhubd)
 
