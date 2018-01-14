@@ -165,6 +165,7 @@ lib/libparameter.so
 lib/libproperty.so
 lib/libmamgr-xmm.so
 lib/libtinyxml.so
+lib/libtinycompress.so
 lib/parameter-framework-plugins/Audio/libaudience-subsystem.so
 lib/parameter-framework-plugins/Audio/libimc-subsystem.so
 lib/parameter-framework-plugins/Audio/liblpe-subsystem.so
@@ -335,6 +336,7 @@ lib/libOMXVideoDecoderAVC.so
 lib/libOMXVideoDecoderAVCSecure.so
 lib/libmultidisplay.so
 lib/libsepdrm.so
+lib/pvr_drv_video.so
 
 # Radio
 lib/libmmgrcli.so
