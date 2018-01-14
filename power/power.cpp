@@ -66,28 +66,6 @@ struct local_power_module {
 
 #define BUF_SIZE 80
 
-static int sysfs_read(const char *path, char buf[BUF_SIZE]) {
-    int len;
-    int fd = open(path, O_RDONLY);
-
-    if (fd < 0) {
-        strerror_r(errno, buf, sizeof(buf));
-        ALOGE("Error opening %s: %s\n", path, buf);
-        return fd;
-    }
-
-    len = read(fd, buf, BUF_SIZE-1);
-    if (len < 0) {
-        strerror_r(errno, buf, sizeof(buf));
-        ALOGE("Error read from %s: %s\n", path, buf);
-    } else {
-        buf[len] = '\0';
-    }
-
-    close(fd);
-    return len;
-}
-
 static void sysfs_write(const char *path, const char *const s) {
     char buf[BUF_SIZE];
     int len;
@@ -108,90 +86,13 @@ static void sysfs_write(const char *path, const char *const s) {
     close(fd);
 }
 
+static void power_init(struct power_module *) {
+}
+
 static void power_set_interactive(struct power_module *, int on __unused) {
 }
 
-static void sysfs_write_int(char *path, int value)
-{
-    char buf[80];
-    snprintf(buf, 80, "%d", value);
-    return sysfs_write(path, buf);
-}
-
-static void set_min_freq(int freq) {
-    for (int cpu = 0; cpu < TOTAL_CPUS; cpu++)
-	sysfs_write_int(cpu_path_min[cpu], freq);
-}
-
-static void set_max_freq(int freq) {
-    for (int cpu = 0; cpu < TOTAL_CPUS; cpu++)
-        sysfs_write_int(cpu_path_max[cpu], freq);
-}
-
-static void power_init(struct power_module *) {
-
-}
-
-static void set_power_profile(int profile) {
-    int min_freq = POWERSAVE_MIN_FREQ;
-    int max_freq = NORMAL_MAX_FREQ;
-
-    ALOGV("%s: profile=%d", __func__, profile);
-
-    switch (profile) {
-    case PROFILE_HIGH_PERFORMANCE:
-        min_freq = NORMAL_MAX_FREQ;
-        max_freq = NORMAL_MAX_FREQ;
-        break;
-    case PROFILE_BIAS_PERFORMANCE:
-        min_freq = BIAS_PERF_MIN_FREQ;
-        max_freq = NORMAL_MAX_FREQ;
-        break;
-    case PROFILE_BIAS_POWER:
-        min_freq = POWERSAVE_MIN_FREQ;
-        max_freq = POWERSAVE_MAX_FREQ;
-        break;
-    case PROFILE_POWER_SAVE:
-        min_freq = POWERSAVE_MIN_FREQ;
-        max_freq = POWERSAVE_MAX_FREQ;
-        break;
-    default:
-        break;
-    }
-
-    set_min_freq(min_freq);
-    set_max_freq(max_freq);
-
-    current_power_profile = profile;
-
-    ALOGD("%s: set power profile mode: %d", __func__, current_power_profile);
-}
-
-static void power_hint( __attribute__((unused)) struct power_module *module,
-                      power_hint_t hint, void *data)
-{
-    if (hint == POWER_HINT_SET_PROFILE) {
-        pthread_mutex_lock(&profile_lock);
-        set_power_profile(*(int32_t *)data);
-        pthread_mutex_unlock(&profile_lock);
-        return;
-    }
-
-    // Skip other hints in powersave mode
-    if (current_power_profile == PROFILE_POWER_SAVE)
-        return;
-
-    // unimplemented for now
-    switch (hint) {
-    case POWER_HINT_INTERACTION:
-        break;
-
-    case POWER_HINT_VSYNC:
-        break;
-
-    default:
-        break;
-    }
+static void power_hint(struct power_module *module __unused, power_hint_t hint __unused, void *data __unused) {
 }
 
 static struct hw_module_methods_t power_module_methods = {
@@ -207,15 +108,6 @@ void set_feature(struct power_module *module __unused, feature_t feature, int st
         sysfs_write(TAP_TO_WAKE_NODE, tmp_str);
     }
 #endif
-}
-
-static int get_feature(__attribute__((unused)) struct power_module *module,
-                       feature_t feature)
-{
-    if (feature == POWER_FEATURE_SUPPORTED_PROFILES)
-        return PROFILE_MAX;
-
-    return -1;
 }
 
 struct local_power_module HAL_MODULE_INFO_SYM = {
@@ -235,6 +127,6 @@ struct local_power_module HAL_MODULE_INFO_SYM = {
         .setInteractive = power_set_interactive,
         .powerHint = power_hint,
         .setFeature = set_feature,
-        //.getFeature = get_feature,
+        //.getFeature = 0,
     },
 };
